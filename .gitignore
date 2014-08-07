@@ -25,3 +25,13 @@ deps/lua/src/liblua.a
 .make-*
 .prerequisites
 *.dSYM
+.DS_Store
+.htaccess
+*.o
+*~
+*.swp
+*.swo
+*.dSYM
+a.out
+tags
+
