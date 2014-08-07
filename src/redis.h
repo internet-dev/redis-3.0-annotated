@@ -99,7 +99,7 @@
 #define REDIS_REPL_BACKLOG_MIN_SIZE (1024*16)          /* 16k */
 #define REDIS_BGSAVE_RETRY_DELAY 5 /* Wait a few secs before trying again. */
 #define REDIS_DEFAULT_PID_FILE "/var/run/redis.pid"
-#define REDIS_DEFAULT_SYSLOG_IDENT "redis"
+#define REDIS_DEFAULT_SYSLOG_IDENT "redis"  /** 日志识别 */
 #define REDIS_DEFAULT_CLUSTER_CONFIG_FILE "nodes.conf"
 #define REDIS_DEFAULT_DAEMONIZE 0
 #define REDIS_DEFAULT_UNIX_SOCKET_PERM 0
@@ -109,7 +109,7 @@
 #define REDIS_DEFAULT_STOP_WRITES_ON_BGSAVE_ERROR 1
 #define REDIS_DEFAULT_RDB_COMPRESSION 1
 #define REDIS_DEFAULT_RDB_CHECKSUM 1
-#define REDIS_DEFAULT_RDB_FILENAME "dump.rdb"
+#define REDIS_DEFAULT_RDB_FILENAME "dump.rdb"   /** 默认持久化数据库名 */
 #define REDIS_DEFAULT_SLAVE_SERVE_STALE_DATA 1
 #define REDIS_DEFAULT_SLAVE_READ_ONLY 1
 #define REDIS_DEFAULT_REPL_DISABLE_TCP_NODELAY 0
@@ -396,7 +396,7 @@ typedef long long mstime_t; /* millisecond time type. */
  * Redis 对象
  */
 #define REDIS_LRU_BITS 24
-#define REDIS_LRU_CLOCK_MAX ((1<<REDIS_LRU_BITS)-1) /* Max value of obj->lru */
+#define REDIS_LRU_CLOCK_MAX ((1 << REDIS_LRU_BITS) - 1) /* Max value of obj->lru */
 #define REDIS_LRU_CLOCK_RESOLUTION 1000 /* LRU clock resolution in ms */
 typedef struct redisObject {
 

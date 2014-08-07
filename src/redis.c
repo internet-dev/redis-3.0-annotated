@@ -1027,12 +1027,12 @@ void activeExpireCycle(int type) {
              * found expired in the current DB. */
             // 如果已删除的过期键占当前总数据库带过期时间的键数量的 25 %
             // 那么不再遍历
-        } while (expired > ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP/4);
+        } while (expired > ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP / 4);
     }
 }
 
 unsigned int getLRUClock(void) {
-    return (mstime()/REDIS_LRU_CLOCK_RESOLUTION) & REDIS_LRU_CLOCK_MAX;
+    return (mstime() / REDIS_LRU_CLOCK_RESOLUTION) & REDIS_LRU_CLOCK_MAX;
 }
 
 /* Add a sample to the operations per second array of samples. */
@@ -1048,12 +1048,12 @@ void trackOperationsPerSecond(void) {
     long long ops_sec;
 
     // 计算距离上一次抽样之后，每秒执行命令的数量
-    ops_sec = t > 0 ? (ops*1000/t) : 0;
+    ops_sec = t > 0 ? (ops * 1000 / t) : 0;
 
     // 将计算出的执行命令数量保存到抽样数组
     server.ops_sec_samples[server.ops_sec_idx] = ops_sec;
     // 更新抽样数组的索引
-    server.ops_sec_idx = (server.ops_sec_idx+1) % REDIS_OPS_SEC_SAMPLES;
+    server.ops_sec_idx = (server.ops_sec_idx + 1) % REDIS_OPS_SEC_SAMPLES;
     // 更新最后一次抽样的时间
     server.ops_sec_last_sample_time = mstime();
     // 更新最后一次抽样时的执行命令数量
@@ -1274,7 +1274,7 @@ void databasesCron(void) {
  * a lot faster than calling time(NULL) */
 void updateCachedTime(void) {
     server.unixtime = time(NULL);
-    server.mstime = mstime();
+    server.mstime   = mstime();
 }
 
 /* This is our timer interrupt, called server.hz times per second.
@@ -1393,7 +1393,7 @@ int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData) {
 
             // 用 LOG 打印数量
             if (used || vkeys) {
-                redisLog(REDIS_VERBOSE,"DB %d: %lld keys (%lld volatile) in %lld slots HT.",j,used,vkeys,size);
+                redisLog(REDIS_VERBOSE, "DB %d: %lld keys (%lld volatile) in %lld slots HT.", j, used, vkeys, size);
                 /* dictPrintStats(server.dict); */
             }
         }
@@ -2051,6 +2051,7 @@ void initServer() {
     int j;
 
     // 设置信号处理函数
+    // 忽略 SIGHUP, SIGPIPE 信号,服务器程序的常规打法
     signal(SIGHUP, SIG_IGN);
     signal(SIGPIPE, SIG_IGN);
     setupSignalHandlers();
@@ -2077,8 +2078,8 @@ void initServer() {
     // 创建共享对象
     createSharedObjects();
     adjustOpenFilesLimit();
-    server.el = aeCreateEventLoop(server.maxclients+REDIS_EVENTLOOP_FDSET_INCR);
-    server.db = zmalloc(sizeof(redisDb)*server.dbnum);
+    server.el = aeCreateEventLoop(server.maxclients + REDIS_EVENTLOOP_FDSET_INCR);
+    server.db = zmalloc(sizeof(redisDb) * server.dbnum);
 
     /* Open the TCP listening socket for the user commands. */
     // 打开 TCP 监听端口，用于等待客户端的命令请求

@@ -109,6 +109,7 @@ static size_t used_memory = 0;
 static int zmalloc_thread_safe = 0;
 pthread_mutex_t used_memory_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+/** oom: 超出内存限制 */
 static void zmalloc_default_oom(size_t size) {
     fprintf(stderr, "zmalloc: Out of memory trying to allocate %zu bytes\n",
         size);
@@ -266,8 +267,8 @@ size_t zmalloc_get_rss(void) {
     int fd, count;
     char *p, *x;
 
-    snprintf(filename,256,"/proc/%d/stat",getpid());
-    if ((fd = open(filename,O_RDONLY)) == -1) return 0;
+    snprintf(filename, 256, "/proc/%d/stat", getpid());
+    if ((fd = open(filename, O_RDONLY)) == -1) return 0;
     if (read(fd,buf,4096) <= 0) {
         close(fd);
         return 0;
@@ -277,15 +278,15 @@ size_t zmalloc_get_rss(void) {
     p = buf;
     count = 23; /* RSS is the 24th field in /proc/<pid>/stat */
     while(p && count--) {
-        p = strchr(p,' ');
+        p = strchr(p, ' ');
         if (p) p++;
     }
     if (!p) return 0;
-    x = strchr(p,' ');
+    x = strchr(p, ' ');
     if (!x) return 0;
     *x = '\0';
 
-    rss = strtoll(p,NULL,10);
+    rss = strtoll(p, NULL, 10);
     rss *= page;
     return rss;
 }

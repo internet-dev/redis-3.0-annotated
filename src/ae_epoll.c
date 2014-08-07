@@ -54,7 +54,7 @@ static int aeApiCreate(aeEventLoop *eventLoop) {
     if (!state) return -1;
 
     // 初始化事件槽空间
-    state->events = zmalloc(sizeof(struct epoll_event)*eventLoop->setsize);
+    state->events = zmalloc(sizeof(struct epoll_event) * eventLoop->setsize);
     if (!state->events) {
         zfree(state);
         return -1;

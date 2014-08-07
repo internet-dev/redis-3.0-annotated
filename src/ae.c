@@ -71,8 +71,8 @@ aeEventLoop *aeCreateEventLoop(int setsize) {
     if ((eventLoop = zmalloc(sizeof(*eventLoop))) == NULL) goto err;
 
     // 初始化文件事件结构和已就绪文件事件结构数组
-    eventLoop->events = zmalloc(sizeof(aeFileEvent)*setsize);
-    eventLoop->fired = zmalloc(sizeof(aeFiredEvent)*setsize);
+    eventLoop->events = zmalloc(sizeof(aeFileEvent)  * setsize);
+    eventLoop->fired  = zmalloc(sizeof(aeFiredEvent) * setsize);
     if (eventLoop->events == NULL || eventLoop->fired == NULL) goto err;
     // 设置数组大小
     eventLoop->setsize = setsize;
@@ -246,8 +246,8 @@ static void aeGetTime(long *seconds, long *milliseconds)
     struct timeval tv;
 
     gettimeofday(&tv, NULL);
-    *seconds = tv.tv_sec;
-    *milliseconds = tv.tv_usec/1000;
+    *seconds      = tv.tv_sec;
+    *milliseconds = tv.tv_usec / 1000;
 }
 
 /*
@@ -261,8 +261,8 @@ static void aeAddMillisecondsToNow(long long milliseconds, long *sec, long *ms) 
     aeGetTime(&cur_sec, &cur_ms);
 
     // 计算增加 milliseconds 之后的秒数和毫秒数
-    when_sec = cur_sec + milliseconds/1000;
-    when_ms = cur_ms + milliseconds%1000;
+    when_sec = cur_sec + milliseconds / 1000;
+    when_ms  = cur_ms +  milliseconds % 1000;
 
     // 进位：
     // 如果 when_ms 大于等于 1000
@@ -274,7 +274,7 @@ static void aeAddMillisecondsToNow(long long milliseconds, long *sec, long *ms) 
 
     // 保存到指针中
     *sec = when_sec;
-    *ms = when_ms;
+    *ms  = when_ms;
 }
 
 /*
