@@ -911,8 +911,8 @@ void freeClient(redisClient *c) {
     if ((c->flags & REDIS_SLAVE) && !(c->flags & REDIS_MONITOR)) {
         char ip[REDIS_IP_STR_LEN];
 
-        if (anetPeerToString(c->fd,ip,sizeof(ip),NULL) != -1) {
-            redisLog(REDIS_WARNING,"Connection with slave %s:%d lost.",
+        if (anetPeerToString(c->fd, ip, sizeof(ip), NULL) != -1) {
+            redisLog(REDIS_WARNING, "Connection with slave %s:%d lost.",
                 ip, c->slave_listening_port);
         }
     }

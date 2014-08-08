@@ -1765,7 +1765,7 @@ void replicationCacheMaster(redisClient *c) {
     // 从客户端链表中移除主服务器
     ln = listSearchKey(server.clients, c);
     redisAssert(ln != NULL);
-    listDelNode(server.clients,ln);
+    listDelNode(server.clients, ln);
 
     /* Save the master. Server.master will be set to null later by
      * replicationHandleMasterDisconnection(). */
@@ -1775,8 +1775,8 @@ void replicationCacheMaster(redisClient *c) {
     /* Remove the event handlers and close the socket. We'll later reuse
      * the socket of the new connection with the master during PSYNC. */
     // 删除事件监视，关闭 socket
-    aeDeleteFileEvent(server.el,c->fd,AE_READABLE);
-    aeDeleteFileEvent(server.el,c->fd,AE_WRITABLE);
+    aeDeleteFileEvent(server.el, c->fd, AE_READABLE);
+    aeDeleteFileEvent(server.el, c->fd, AE_WRITABLE);
     close(c->fd);
 
     /* Set fd to -1 so that we can safely call freeClient(c) later. */

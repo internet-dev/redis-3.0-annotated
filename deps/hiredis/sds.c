@@ -85,7 +85,7 @@ sds sdsdup(const sds s) {
 /* Free an sds string. No operation is performed if 's' is NULL. */
 void sdsfree(sds s) {
     if (s == NULL) return;
-    zfree(s-sizeof(struct sdshdr));
+    zfree(s - sizeof(struct sdshdr));
 }
 
 /* Set the sds string length to the length as obtained with strlen(), so
