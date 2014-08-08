@@ -297,7 +297,7 @@ long long aeCreateTimeEvent(aeEventLoop *eventLoop, long long milliseconds,
     te->id = id;
 
     // 设定处理事件的时间
-    aeAddMillisecondsToNow(milliseconds,&te->when_sec,&te->when_ms);
+    aeAddMillisecondsToNow(milliseconds, &te->when_sec, &te->when_ms);
     // 设置事件处理器
     te->timeProc = proc;
     te->finalizerProc = finalizerProc;

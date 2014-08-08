@@ -95,7 +95,7 @@ void aofRewriteBufferReset(void) {
 
     // 初始化新的缓存（链表）
     server.aof_rewrite_buf_blocks = listCreate();
-    listSetFreeMethod(server.aof_rewrite_buf_blocks,zfree);
+    listSetFreeMethod(server.aof_rewrite_buf_blocks, zfree);
 }
 
 /* Return the current size of the AOF rerwite buffer. 

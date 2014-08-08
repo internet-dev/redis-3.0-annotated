@@ -932,8 +932,8 @@ void freeClient(redisClient *c) {
 
     /* Unsubscribe from all the pubsub channels */
     // 退订所有频道和模式
-    pubsubUnsubscribeAllChannels(c,0);
-    pubsubUnsubscribeAllPatterns(c,0);
+    pubsubUnsubscribeAllChannels(c, 0);
+    pubsubUnsubscribeAllPatterns(c, 0);
     dictRelease(c->pubsub_channels);
     listRelease(c->pubsub_patterns);
 

@@ -472,7 +472,7 @@ int dictRehashMilliseconds(dict *d, int ms) {
  * T = O(1)
  */
 static void _dictRehashStep(dict *d) {
-    if (d->iterators == 0) dictRehash(d,1);
+    if (d->iterators == 0) dictRehash(d, 1);
 }
 
 /* Add an element to the target hash table */

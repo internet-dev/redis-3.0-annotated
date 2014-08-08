@@ -466,18 +466,18 @@ static int _anetTcpServer(char *err, int port, char *bindaddr, int af, int backl
     char _port[6];  /* strlen("65535") */
     struct addrinfo hints, *servinfo, *p;
 
-    snprintf(_port,6,"%d",port);
-    memset(&hints,0,sizeof(hints));
+    snprintf(_port, 6, "%d", port);
+    memset(&hints, 0, sizeof(hints));
     hints.ai_family = af;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;    /* No effect if bindaddr != NULL */
 
-    if ((rv = getaddrinfo(bindaddr,_port,&hints,&servinfo)) != 0) {
+    if ((rv = getaddrinfo(bindaddr, _port, &hints, &servinfo)) != 0) {
         anetSetError(err, "%s", gai_strerror(rv));
         return ANET_ERR;
     }
     for (p = servinfo; p != NULL; p = p->ai_next) {
-        if ((s = socket(p->ai_family,p->ai_socktype,p->ai_protocol)) == -1)
+        if ((s = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
             continue;
 
         if (af == AF_INET6 && anetV6Only(err,s) == ANET_ERR) goto error;

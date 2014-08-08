@@ -422,9 +422,9 @@ void unwatchAllKeys(redisClient *c) {
         wk = listNodeValue(ln);
         // 取出客户端链表
         clients = dictFetchValue(wk->db->watched_keys, wk->key);
-        redisAssertWithInfo(c,NULL,clients != NULL);
+        redisAssertWithInfo(c, NULL, clients != NULL);
         // 删除链表中的客户端节点
-        listDelNode(clients,listSearchKey(clients,c));
+        listDelNode(clients, listSearchKey(clients, c));
 
         /* Kill the entry at all if this was the only client */
         // 如果链表已经被清空，那么删除这个键

@@ -2041,7 +2041,7 @@ void resetServerStats(void) {
     server.stat_sync_full = 0;
     server.stat_sync_partial_ok = 0;
     server.stat_sync_partial_err = 0;
-    memset(server.ops_sec_samples,0,sizeof(server.ops_sec_samples));
+    memset(server.ops_sec_samples, 0, sizeof(server.ops_sec_samples));
     server.ops_sec_idx = 0;
     server.ops_sec_last_sample_time = mstime();
     server.ops_sec_last_sample_ops = 0;
@@ -2160,7 +2160,7 @@ void initServer() {
     // 用于接受并应答客户端的 connect() 调用
     for (j = 0; j < server.ipfd_count; j++) {
         if (aeCreateFileEvent(server.el, server.ipfd[j], AE_READABLE,
-            acceptTcpHandler,NULL) == AE_ERR)
+            acceptTcpHandler, NULL) == AE_ERR)
             {
                 redisPanic(
                     "Unrecoverable error creating server.ipfd file event.");

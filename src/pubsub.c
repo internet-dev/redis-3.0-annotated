@@ -324,7 +324,7 @@ int pubsubUnsubscribeAllChannels(redisClient *c, int notify) {
     int count = 0;
 
     // 退订
-    while((de = dictNext(di)) != NULL) {
+    while ((de = dictNext(di)) != NULL) {
         robj *channel = dictGetKey(de);
 
         count += pubsubUnsubscribeChannel(c,channel,notify);

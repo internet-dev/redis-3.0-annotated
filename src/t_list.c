@@ -1190,17 +1190,17 @@ void unblockClientWaitingData(redisClient *c) {
     dictIterator *di;
     list *l;
 
-    redisAssertWithInfo(c,NULL,dictSize(c->bpop.keys) != 0);
+    redisAssertWithInfo(c, NULL, dictSize(c->bpop.keys) != 0);
 
     // 遍历所有 key ，将它们从客户端 db->blocking_keys 的链表中移除
     di = dictGetIterator(c->bpop.keys);
     /* The client may wait for multiple keys, so unblock it for every key. */
-    while((de = dictNext(di)) != NULL) {
+    while ((de = dictNext(di)) != NULL) {
         robj *key = dictGetKey(de);
 
         /* Remove this client from the list of clients waiting for this key. */
         // 获取所有因为 key 而被阻塞的客户端的链表
-        l = dictFetchValue(c->db->blocking_keys,key);
+        l = dictFetchValue(c->db->blocking_keys, key);
 
         redisAssertWithInfo(c,key,l != NULL);
 
