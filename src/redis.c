@@ -357,19 +357,19 @@ void redisLogRaw(int level, const char *msg) {
     level &= 0xff; /* clear flags */
     if (level < server.verbosity) return;
 
-    fp = log_to_stdout ? stdout : fopen(server.logfile,"a");
+    fp = log_to_stdout ? stdout : fopen(server.logfile, "a");
     if (!fp) return;
 
     if (rawmode) {
-        fprintf(fp,"%s",msg);
+        fprintf(fp, "%s", msg);
     } else {
         int off;
         struct timeval tv;
 
-        gettimeofday(&tv,NULL);
-        off = strftime(buf,sizeof(buf),"%d %b %H:%M:%S.",localtime(&tv.tv_sec));
-        snprintf(buf+off,sizeof(buf)-off,"%03d",(int)tv.tv_usec/1000);
-        fprintf(fp,"[%d] %s %c %s\n",(int)getpid(),buf,c[level],msg);
+        gettimeofday(&tv, NULL);
+        off = strftime(buf, sizeof(buf), "%d %b %H:%M:%S.", localtime(&tv.tv_sec));
+        snprintf(buf + off, sizeof(buf) - off, "%03d", (int)tv.tv_usec / 1000);
+        fprintf(fp, "[%d] %s %c %s\n", (int)getpid(), buf, c[level], msg);
     }
     fflush(fp);
 
@@ -384,13 +384,13 @@ void redisLog(int level, const char *fmt, ...) {
     va_list ap;
     char msg[REDIS_MAX_LOGMSG_LEN];
 
-    if ((level&0xff) < server.verbosity) return;
+    if ((level & 0xff) < server.verbosity) return;
 
     va_start(ap, fmt);
     vsnprintf(msg, sizeof(msg), fmt, ap);
     va_end(ap);
 
-    redisLogRaw(level,msg);
+    redisLogRaw(level, msg);
 }
 
 /* Log a fixed message without printf-alike capabilities, in a way that is
@@ -1097,7 +1097,7 @@ int clientsCronHandleTimeout(redisClient *c) {
         // 客户端最后一次与服务器通讯的时间已经超过了 maxidletime 时间
         (now - c->lastinteraction > server.maxidletime))
     {
-        redisLog(REDIS_VERBOSE,"Closing idle client");
+        redisLog(REDIS_VERBOSE, "Closing idle client");
         // 关闭超时客户端
         freeClient(c);
         return 1;
@@ -1185,13 +1185,13 @@ void clientsCron(void) {
     int numclients = listLength(server.clients);
 
     // 要处理的客户端数量
-    int iterations = numclients/(server.hz*10);
+    int iterations = numclients / (server.hz * 10);
 
     // 至少要处理 50 个客户端
     if (iterations < 50)
         iterations = (numclients < 50) ? numclients : 50;
 
-    while(listLength(server.clients) && iterations--) {
+    while (listLength(server.clients) && iterations--) {
         redisClient *c;
         listNode *head;
 
@@ -1405,7 +1405,7 @@ int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData) {
         run_with_period(5000) {
             redisLog(REDIS_VERBOSE,
                 "%lu clients connected (%lu slaves), %zu bytes in use",
-                listLength(server.clients)-listLength(server.slaves),
+                listLength(server.clients) - listLength(server.slaves),
                 listLength(server.slaves),
                 zmalloc_used_memory());
         }

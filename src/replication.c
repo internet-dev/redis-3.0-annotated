@@ -1758,12 +1758,12 @@ void replicationCacheMaster(redisClient *c) {
     listNode *ln;
 
     redisAssert(server.master != NULL && server.cached_master == NULL);
-    redisLog(REDIS_NOTICE,"Caching the disconnected master state.");
+    redisLog(REDIS_NOTICE, "Caching the disconnected master state.");
 
     /* Remove from the list of clients, we don't want this client to be
      * listed by CLIENT LIST or processed in any way by batch operations. */
     // 从客户端链表中移除主服务器
-    ln = listSearchKey(server.clients,c);
+    ln = listSearchKey(server.clients, c);
     redisAssert(ln != NULL);
     listDelNode(server.clients,ln);
 
