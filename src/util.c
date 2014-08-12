@@ -224,16 +224,16 @@ int ll2string(char *s, size_t len, long long value) {
 
     if (len == 0) return 0;
     v = (value < 0) ? -value : value;
-    p = buf+31; /* point to the last character */
+    p = buf + 31; /* point to the last character */
     do {
-        *p-- = '0'+(v%10);
+        *p-- = '0' + ( v % 10);
         v /= 10;
     } while(v);
     if (value < 0) *p-- = '-';
     p++;
-    l = 32-(p-buf);
-    if (l+1 > len) l = len-1; /* Make sure it fits, including the nul term */
-    memcpy(s,p,l);
+    l = 32 - (p - buf);
+    if (l + 1 > len) l = len - 1; /* Make sure it fits, including the nul term */
+    memcpy(s, p, l);
     s[l] = '\0';
     return l;
 }

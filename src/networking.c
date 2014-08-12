@@ -46,7 +46,7 @@ size_t zmalloc_size_sds(sds s) {
  * for a string object. */
 // 返回 object->ptr 所指向的字符串对象所使用的内存数量。
 size_t getStringObjectSdsUsedMemory(robj *o) {
-    redisAssertWithInfo(NULL,o,o->type == REDIS_STRING);
+    redisAssertWithInfo(NULL, o, o->type == REDIS_STRING);
     switch(o->encoding) {
     case REDIS_ENCODING_RAW: return zmalloc_size_sds(o->ptr);
     case REDIS_ENCODING_EMBSTR: return sdslen(o->ptr);
@@ -278,8 +278,8 @@ int _addReplyToBuffer(redisClient *c, char *s, size_t len) {
     if (len > available) return REDIS_ERR;
 
     // 复制内容到 c->buf 里面
-    memcpy(c->buf+c->bufpos,s,len);
-    c->bufpos+=len;
+    memcpy(c->buf + c->bufpos, s, len);
+    c->bufpos += len;
 
     return REDIS_OK;
 }
@@ -311,7 +311,7 @@ void _addReplyObjectToList(redisClient *c, robj *o) {
         // 那么将新对象的内容拼接到表尾 SDS 的末尾
         if (tail->ptr != NULL &&
             tail->encoding == REDIS_ENCODING_RAW &&
-            sdslen(tail->ptr)+sdslen(o->ptr) <= REDIS_REPLY_CHUNK_BYTES)
+            sdslen(tail->ptr) + sdslen(o->ptr) <= REDIS_REPLY_CHUNK_BYTES)
         {
             c->reply_bytes -= zmalloc_size_sds(tail->ptr);
             tail = dupLastObjectIfNeeded(c->reply);
@@ -372,9 +372,9 @@ void _addReplyStringToList(redisClient *c, char *s, size_t len) {
 
     if (listLength(c->reply) == 0) {
         // 为字符串创建字符串对象并追加到回复链表末尾
-        robj *o = createStringObject(s,len);
+        robj *o = createStringObject(s, len);
 
-        listAddNodeTail(c->reply,o);
+        listAddNodeTail(c->reply, o);
         c->reply_bytes += getStringObjectSdsUsedMemory(o);
     } else {
         tail = listNodeValue(listLast(c->reply));
@@ -386,13 +386,13 @@ void _addReplyStringToList(redisClient *c, char *s, size_t len) {
             c->reply_bytes -= zmalloc_size_sds(tail->ptr);
             tail = dupLastObjectIfNeeded(c->reply);
             // 将字符串拼接到一个 SDS 之后
-            tail->ptr = sdscatlen(tail->ptr,s,len);
+            tail->ptr = sdscatlen(tail->ptr, s, len);
             c->reply_bytes += zmalloc_size_sds(tail->ptr);
         } else {
             // 为字符串创建字符串对象并追加到回复链表末尾
-            robj *o = createStringObject(s,len);
+            robj *o = createStringObject(s, len);
 
-            listAddNodeTail(c->reply,o);
+            listAddNodeTail(c->reply, o);
             c->reply_bytes += getStringObjectSdsUsedMemory(o);
         }
     }
@@ -424,10 +424,10 @@ void addReply(redisClient *c, robj *obj) {
      */
     if (sdsEncodedObject(obj)) {
         // 首先尝试复制内容到 c->buf 中，这样可以避免内存分配
-        if (_addReplyToBuffer(c,obj->ptr,sdslen(obj->ptr)) != REDIS_OK)
+        if (_addReplyToBuffer(c, obj->ptr, sdslen(obj->ptr)) != REDIS_OK)
             // 如果 c->buf 中的空间不够，就复制到 c->reply 链表中
             // 可能会引起内存分配
-            _addReplyObjectToList(c,obj);
+            _addReplyObjectToList(c, obj);
     } else if (obj->encoding == REDIS_ENCODING_INT) {
         /* Optimization: if there is room in the static buffer for 32 bytes
          * (more than the max chars a 64 bit integer can take as string) we
@@ -439,7 +439,7 @@ void addReply(redisClient *c, robj *obj) {
             int len;
 
             len = ll2string(buf,sizeof(buf),(long)obj->ptr);
-            if (_addReplyToBuffer(c,buf,len) == REDIS_OK)
+            if (_addReplyToBuffer(c, buf, len) == REDIS_OK)
                 return;
             /* else... continue with the normal code path, but should never
              * happen actually since we verified there is room. */
@@ -448,8 +448,8 @@ void addReply(redisClient *c, robj *obj) {
         // 将它转换为字符串
         obj = getDecodedObject(obj);
         // 保存到缓存中
-        if (_addReplyToBuffer(c,obj->ptr,sdslen(obj->ptr)) != REDIS_OK)
-            _addReplyObjectToList(c,obj);
+        if (_addReplyToBuffer(c, obj->ptr, sdslen(obj->ptr)) != REDIS_OK)
+            _addReplyObjectToList(c, obj);
         decrRefCount(obj);
     } else {
         redisPanic("Wrong obj->encoding in addReply()");
@@ -478,8 +478,8 @@ void addReplySds(redisClient *c, sds s) {
  */
 void addReplyString(redisClient *c, char *s, size_t len) {
     if (prepareClientToWrite(c) != REDIS_OK) return;
-    if (_addReplyToBuffer(c,s,len) != REDIS_OK)
-        _addReplyStringToList(c,s,len);
+    if (_addReplyToBuffer(c, s, len) != REDIS_OK)
+        _addReplyStringToList(c, s, len);
 }
 
 void addReplyErrorLength(redisClient *c, char *s, size_t len) {
@@ -620,19 +620,19 @@ void addReplyLongLongWithPrefix(redisClient *c, long long ll, char prefix) {
      * like it is most of the times. */
     if (prefix == '*' && ll < REDIS_SHARED_BULKHDR_LEN) {
         // 多条批量回复
-        addReply(c,shared.mbulkhdr[ll]);
+        addReply(c, shared.mbulkhdr[ll]);
         return;
     } else if (prefix == '$' && ll < REDIS_SHARED_BULKHDR_LEN) {
         // 批量回复
-        addReply(c,shared.bulkhdr[ll]);
+        addReply(c, shared.bulkhdr[ll]);
         return;
     }
 
     buf[0] = prefix;
-    len = ll2string(buf+1,sizeof(buf)-1,ll);
-    buf[len+1] = '\r';
-    buf[len+2] = '\n';
-    addReplyString(c,buf,len+3);
+    len = ll2string(buf + 1,sizeof(buf) - 1, ll);
+    buf[len + 1] = '\r';
+    buf[len + 2] = '\n';
+    addReplyString(c, buf, len + 3);
 }
 
 /*
@@ -642,11 +642,11 @@ void addReplyLongLongWithPrefix(redisClient *c, long long ll, char prefix) {
  */
 void addReplyLongLong(redisClient *c, long long ll) {
     if (ll == 0)
-        addReply(c,shared.czero);
+        addReply(c, shared.czero);
     else if (ll == 1)
-        addReply(c,shared.cone);
+        addReply(c, shared.cone);
     else
-        addReplyLongLongWithPrefix(c,ll,':');
+        addReplyLongLongWithPrefix(c, ll, ':');
 }
 
 void addReplyMultiBulkLen(redisClient *c, long length) {
@@ -687,9 +687,9 @@ void addReplyBulkLen(redisClient *c, robj *obj) {
  * 返回一个 Redis 对象作为回复
  */
 void addReplyBulk(redisClient *c, robj *obj) {
-    addReplyBulkLen(c,obj);
-    addReply(c,obj);
-    addReply(c,shared.crlf);
+    addReplyBulkLen(c, obj);
+    addReply(c, obj);
+    addReply(c, shared.crlf);
 }
 
 /* Add a C buffer as bulk reply 
@@ -941,8 +941,8 @@ void freeClient(redisClient *c) {
      * accumulated arguments. */
     // 关闭套接字，并从事件处理器中删除该套接字的事件
     if (c->fd != -1) {
-        aeDeleteFileEvent(server.el,c->fd,AE_READABLE);
-        aeDeleteFileEvent(server.el,c->fd,AE_WRITABLE);
+        aeDeleteFileEvent(server.el, c->fd, AE_READABLE);
+        aeDeleteFileEvent(server.el, c->fd, AE_WRITABLE);
         close(c->fd);
     }
 
@@ -955,18 +955,18 @@ void freeClient(redisClient *c) {
     /* Remove from the list of clients */
     // 从服务器的客户端链表中删除自身
     if (c->fd != -1) {
-        ln = listSearchKey(server.clients,c);
+        ln = listSearchKey(server.clients, c);
         redisAssert(ln != NULL);
-        listDelNode(server.clients,ln);
+        listDelNode(server.clients, ln);
     }
 
     /* When client was just unblocked because of a blocking operation,
      * remove it from the list of unblocked clients. */
     // 删除客户端的阻塞信息
     if (c->flags & REDIS_UNBLOCKED) {
-        ln = listSearchKey(server.unblocked_clients,c);
+        ln = listSearchKey(server.unblocked_clients, c);
         redisAssert(ln != NULL);
-        listDelNode(server.unblocked_clients,ln);
+        listDelNode(server.unblocked_clients, ln);
     }
 
     /* Master/slave cleanup Case 1:
@@ -979,7 +979,7 @@ void freeClient(redisClient *c) {
         list *l = (c->flags & REDIS_MONITOR) ? server.monitors : server.slaves;
         ln = listSearchKey(l,c);
         redisAssert(ln != NULL);
-        listDelNode(l,ln);
+        listDelNode(l, ln);
         /* We need to remember the time when we started to have zero
          * attached slaves, as after some time we'll free the replication
          * backlog. */
@@ -1020,7 +1020,7 @@ void freeClient(redisClient *c) {
 void freeClientAsync(redisClient *c) {
     if (c->flags & REDIS_CLOSE_ASAP) return;
     c->flags |= REDIS_CLOSE_ASAP;
-    listAddNodeTail(server.clients_to_close,c);
+    listAddNodeTail(server.clients_to_close, c);
 }
 
 // 关闭需要异步关闭的客户端
@@ -1062,7 +1062,7 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata, int mask) {
             // c->sentlen 是用来处理 short write 的
             // 当出现 short write ，导致写入未能一次完成时，
             // c->buf+c->sentlen 就会偏移到正确（未写入）内容的位置上。
-            nwritten = write(fd,c->buf+c->sentlen,c->bufpos-c->sentlen);
+            nwritten = write(fd, c->buf + c->sentlen, c->bufpos-c->sentlen);
             // 出错则跳出
             if (nwritten <= 0) break;
             // 成功写入则更新写入计数器变量
@@ -1097,7 +1097,7 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata, int mask) {
             // c->sentlen 是用来处理 short write 的
             // 当出现 short write ，导致写入未能一次完成时，
             // c->buf+c->sentlen 就会偏移到正确（未写入）内容的位置上。
-            nwritten = write(fd, ((char*)o->ptr)+c->sentlen,objlen-c->sentlen);
+            nwritten = write(fd, ((char*)o->ptr) + c->sentlen, objlen-c->sentlen);
             // 写入出错则跳出
             if (nwritten <= 0) break;
             // 成功写入则更新写入计数器变量
@@ -1107,7 +1107,7 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata, int mask) {
             /* If we fully sent the object on head go to the next one */
             // 如果缓冲区内容全部写入完毕，那么删除已写入完毕的节点
             if (c->sentlen == objlen) {
-                listDelNode(c->reply,listFirst(c->reply));
+                listDelNode(c->reply, listFirst(c->reply));
                 c->sentlen = 0;
                 c->reply_bytes -= objmem;
             }
@@ -1160,7 +1160,7 @@ void sendReplyToClient(aeEventLoop *el, int fd, void *privdata, int mask) {
         c->sentlen = 0;
 
         // 删除 write handler
-        aeDeleteFileEvent(server.el,c->fd,AE_WRITABLE);
+        aeDeleteFileEvent(server.el, c->fd, AE_WRITABLE);
 
         /* Close connection after entire reply has been sent. */
         // 如果指定了写入之后关闭客户端 FLAG ，那么关闭客户端
@@ -2071,18 +2071,18 @@ int checkClientOutputBufferLimits(redisClient *c) {
  * 比如说，可能有底层函数正在推入数据到客户端的输出缓冲区里面。      
  */
 void asyncCloseClientOnOutputBufferLimitReached(redisClient *c) {
-    redisAssert(c->reply_bytes < ULONG_MAX-(1024*64));
+    redisAssert(c->reply_bytes < ULONG_MAX - (1024 * 64));
 
     // 已经被标记了
     if (c->reply_bytes == 0 || c->flags & REDIS_CLOSE_ASAP) return;
 
     // 检查限制
     if (checkClientOutputBufferLimits(c)) {
-        sds client = catClientInfoString(sdsempty(),c);
+        sds client = catClientInfoString(sdsempty(), c);
 
         // 异步关闭
         freeClientAsync(c);
-        redisLog(REDIS_WARNING,"Client %s scheduled to be closed ASAP for overcoming of output buffer limits.", client);
+        redisLog(REDIS_WARNING, "Client %s scheduled to be closed ASAP for overcoming of output buffer limits.", client);
         sdsfree(client);
     }
 }

@@ -1881,7 +1881,7 @@ void refreshGoodSlavesCount(void) {
         !server.repl_min_slaves_max_lag) return;
 
     listRewind(server.slaves,&li);
-    while((ln = listNext(&li))) {
+    while ((ln = listNext(&li))) {
         redisClient *slave = ln->value;
 
         // 计算延迟值

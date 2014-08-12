@@ -112,7 +112,7 @@ int pubsubSubscribeChannel(redisClient *c, robj *channel) {
     // 被订阅的客户端
     addReplyBulk(c,channel);
     // 客户端订阅的频道和模式总数
-    addReplyLongLong(c,dictSize(c->pubsub_channels)+listLength(c->pubsub_patterns));
+    addReplyLongLong(c, dictSize(c->pubsub_channels) + listLength(c->pubsub_patterns));
 
     return retval;
 }
@@ -146,7 +146,7 @@ int pubsubUnsubscribeChannel(redisClient *c, robj *channel, int notify) {
     //  'channel-x': NULL,
     //  'channel-z': NULL,
     // }
-    if (dictDelete(c->pubsub_channels,channel) == DICT_OK) {
+    if (dictDelete(c->pubsub_channels, channel) == DICT_OK) {
 
         // channel 移除成功，表示客户端订阅了这个频道，执行以下代码
 
@@ -191,13 +191,13 @@ int pubsubUnsubscribeChannel(redisClient *c, robj *channel, int notify) {
     /* Notify the client */
     // 回复客户端
     if (notify) {
-        addReply(c,shared.mbulkhdr[3]);
+        addReply(c, shared.mbulkhdr[3]);
         // "ubsubscribe" 字符串
-        addReply(c,shared.unsubscribebulk);
+        addReply(c, shared.unsubscribebulk);
         // 被退订的频道
-        addReplyBulk(c,channel);
+        addReplyBulk(c, channel);
         // 退订频道之后客户端仍在订阅的频道和模式的总数
-        addReplyLongLong(c,dictSize(c->pubsub_channels)+
+        addReplyLongLong(c, dictSize(c->pubsub_channels) +
                        listLength(c->pubsub_patterns));
 
     }
@@ -275,7 +275,7 @@ int pubsubUnsubscribePattern(redisClient *c, robj *pattern, int notify) {
     incrRefCount(pattern); /* Protect the object. May be the same we remove */
 
     // 先确认一下，客户端是否订阅了这个模式
-    if ((ln = listSearchKey(c->pubsub_patterns,pattern)) != NULL) {
+    if ((ln = listSearchKey(c->pubsub_patterns, pattern)) != NULL) {
 
         retval = 1;
 
@@ -283,24 +283,24 @@ int pubsubUnsubscribePattern(redisClient *c, robj *pattern, int notify) {
         listDelNode(c->pubsub_patterns,ln);
 
         // 设置 pubsubPattern 结构
-        pat.client = c;
+        pat.client  = c;
         pat.pattern = pattern;
 
         // 在服务器中查找
-        ln = listSearchKey(server.pubsub_patterns,&pat);
-        listDelNode(server.pubsub_patterns,ln);
+        ln = listSearchKey(server.pubsub_patterns, &pat);
+        listDelNode(server.pubsub_patterns, ln);
     }
 
     /* Notify the client */
     // 回复客户端
     if (notify) {
-        addReply(c,shared.mbulkhdr[3]);
+        addReply(c, shared.mbulkhdr[3]);
         // "punsubscribe" 字符串
-        addReply(c,shared.punsubscribebulk);
+        addReply(c, shared.punsubscribebulk);
         // 被退订的模式
-        addReplyBulk(c,pattern);
+        addReplyBulk(c, pattern);
         // 退订频道之后客户端仍在订阅的频道和模式的总数
-        addReplyLongLong(c,dictSize(c->pubsub_channels)+
+        addReplyLongLong(c, dictSize(c->pubsub_channels) +
                        listLength(c->pubsub_patterns));
     }
 
@@ -327,17 +327,17 @@ int pubsubUnsubscribeAllChannels(redisClient *c, int notify) {
     while ((de = dictNext(di)) != NULL) {
         robj *channel = dictGetKey(de);
 
-        count += pubsubUnsubscribeChannel(c,channel,notify);
+        count += pubsubUnsubscribeChannel(c, channel, notify);
     }
 
     /* We were subscribed to nothing? Still reply to the client. */
     // 如果在执行这个函数时，客户端没有订阅任何频道，
     // 那么向客户端发送回复
     if (notify && count == 0) {
-        addReply(c,shared.mbulkhdr[3]);
-        addReply(c,shared.unsubscribebulk);
-        addReply(c,shared.nullbulk);
-        addReplyLongLong(c,dictSize(c->pubsub_channels)+
+        addReply(c, shared.mbulkhdr[3]);
+        addReply(c, shared.unsubscribebulk);
+        addReply(c, shared.nullbulk);
+        addReplyLongLong(c, dictSize(c->pubsub_channels) +
                        listLength(c->pubsub_patterns));
     }
 
@@ -360,7 +360,7 @@ int pubsubUnsubscribeAllPatterns(redisClient *c, int notify) {
     int count = 0;
 
     // 迭代客户端订阅模式的链表
-    listRewind(c->pubsub_patterns,&li);
+    listRewind(c->pubsub_patterns, &li);
     while ((ln = listNext(&li)) != NULL) {
         robj *pattern = ln->value;
 
@@ -372,10 +372,10 @@ int pubsubUnsubscribeAllPatterns(redisClient *c, int notify) {
     // 那么向客户端发送回复
     if (notify && count == 0) {
         /* We were subscribed to nothing? Still reply to the client. */
-        addReply(c,shared.mbulkhdr[3]);
-        addReply(c,shared.punsubscribebulk);
-        addReply(c,shared.nullbulk);
-        addReplyLongLong(c,dictSize(c->pubsub_channels)+
+        addReply(c, shared.mbulkhdr[3]);
+        addReply(c, shared.punsubscribebulk);
+        addReply(c, shared.nullbulk);
+        addReplyLongLong(c, dictSize(c->pubsub_channels) +
                        listLength(c->pubsub_patterns));
     }
 

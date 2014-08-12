@@ -358,7 +358,7 @@ int dictRehash(dict *d, int n) {
 
     // 进行 N 步迁移
     // T = O(N)
-    while(n--) {
+    while (n--) {
         dictEntry *de, *nextde;
 
         /* Check if we already rehashed the whole table... */
@@ -383,7 +383,7 @@ int dictRehash(dict *d, int n) {
         assert(d->ht[0].size > (unsigned)d->rehashidx);
 
         // 略过数组中为空的索引，找到下一个非空索引
-        while(d->ht[0].table[d->rehashidx] == NULL) d->rehashidx++;
+        while (d->ht[0].table[d->rehashidx] == NULL) d->rehashidx++;
 
         // 指向该索引的链表表头节点
         de = d->ht[0].table[d->rehashidx];
@@ -727,7 +727,7 @@ static int dictGenericDelete(dict *d, const void *key, int nofree)
  * T = O(1)
  */
 int dictDelete(dict *ht, const void *key) {
-    return dictGenericDelete(ht,key,0);
+    return dictGenericDelete(ht, key, 0);
 }
 
 /*
@@ -801,8 +801,8 @@ int _dictClear(dict *d, dictht *ht, void(callback)(void *)) {
 void dictRelease(dict *d)
 {
     // 删除并清空两个哈希表
-    _dictClear(d,&d->ht[0],NULL);
-    _dictClear(d,&d->ht[1],NULL);
+    _dictClear(d, &d->ht[0], NULL);
+    _dictClear(d, &d->ht[1], NULL);
     // 释放节点结构
     zfree(d);
 }

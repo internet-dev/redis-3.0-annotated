@@ -80,7 +80,7 @@ void listRelease(list *list)
     current = list->head;
     // 遍历整个链表
     len = list->len;
-    while(len--) {
+    while (len--) {
         next = current->next;
 
         // 如果有设置值释放函数，那么调用它
