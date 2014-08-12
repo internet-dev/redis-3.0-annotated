@@ -995,9 +995,9 @@ void freeClient(redisClient *c) {
     /* If this client was scheduled for async freeing we need to remove it
      * from the queue. */
     if (c->flags & REDIS_CLOSE_ASAP) {
-        ln = listSearchKey(server.clients_to_close,c);
+        ln = listSearchKey(server.clients_to_close, c);
         redisAssert(ln != NULL);
-        listDelNode(server.clients_to_close,ln);
+        listDelNode(server.clients_to_close, ln);
     }
 
     /* Release other dynamically allocated client structure fields,

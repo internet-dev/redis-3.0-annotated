@@ -223,7 +223,7 @@ void replicationFeedSlaves(list *slaves, int dictid, robj **argv, int argc) {
         } else {
             int dictid_len;
 
-            dictid_len = ll2string(llstr,sizeof(llstr),dictid);
+            dictid_len = ll2string(llstr, sizeof(llstr), dictid);
             selectcmd = createObject(REDIS_STRING,
                 sdscatprintf(sdsempty(),
                 "*2\r\n$6\r\nSELECT\r\n$%d\r\n%s\r\n",

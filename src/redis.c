@@ -789,10 +789,10 @@ int activeExpireCycleTryExpire(redisDb *db, dictEntry *de, long long now) {
         // 键已过期
 
         sds key = dictGetKey(de);
-        robj *keyobj = createStringObject(key,sdslen(key));
+        robj *keyobj = createStringObject(key, sdslen(key));
 
         // 传播过期命令
-        propagateExpire(db,keyobj);
+        propagateExpire(db, keyobj);
         // 从数据库中删除该键
         dbDelete(db,keyobj);
         // 发送事件
@@ -876,7 +876,7 @@ void activeExpireCycle(int type) {
         // 如果上次函数没有触发 timelimit_exit ，那么不执行处理
         if (!timelimit_exit) return;
         // 如果距离上次执行未够一定时间，那么不执行处理
-        if (start < last_fast_cycle + ACTIVE_EXPIRE_CYCLE_FAST_DURATION*2) return;
+        if (start < last_fast_cycle + ACTIVE_EXPIRE_CYCLE_FAST_DURATION * 2) return;
         // 运行到这里，说明执行快速处理，记录当前时间
         last_fast_cycle = start;
     }
@@ -904,7 +904,7 @@ void activeExpireCycle(int type) {
      * microseconds we can spend in this function. */
     // 函数处理的微秒时间上限
     // ACTIVE_EXPIRE_CYCLE_SLOW_TIME_PERC 默认为 25 ，也即是 25 % 的 CPU 时间
-    timelimit = 1000000*ACTIVE_EXPIRE_CYCLE_SLOW_TIME_PERC/server.hz/100;
+    timelimit = 1000000 * ACTIVE_EXPIRE_CYCLE_SLOW_TIME_PERC / server.hz / 100;
     timelimit_exit = 0;
     if (timelimit <= 0) timelimit = 1;
 
@@ -918,7 +918,7 @@ void activeExpireCycle(int type) {
     for (j = 0; j < dbs_per_call; j++) {
         int expired;
         // 指向要处理的数据库
-        redisDb *db = server.db+(current_db % server.dbnum);
+        redisDb *db = server.db + (current_db % server.dbnum);
 
         /* Increment the DB now so we are sure if we run out of time
          * in the current DB we'll restart from the next. This allows to
@@ -952,7 +952,7 @@ void activeExpireCycle(int type) {
             // 这个数据库的使用率低于 1% ，扫描起来太费力了（大部分都会 MISS）
             // 跳过，等待字典收缩程序运行
             if (num && slots > DICT_HT_INITIAL_SIZE &&
-                (num*100/slots < 1)) break;
+                (num * 100 / slots < 1)) break;
 
             /* The main collection cycle. Sample random keys among keys
              * with an expire set, checking for expired ones. 
@@ -978,9 +978,9 @@ void activeExpireCycle(int type) {
                 // 从 expires 中随机取出一个带过期时间的键
                 if ((de = dictGetRandomKey(db->expires)) == NULL) break;
                 // 计算 TTL
-                ttl = dictGetSignedIntegerVal(de)-now;
+                ttl = dictGetSignedIntegerVal(de) - now;
                 // 如果键已经过期，那么删除它，并将 expired 计数器增一
-                if (activeExpireCycleTryExpire(db,de,now)) expired++;
+                if (activeExpireCycleTryExpire(db, de, now)) expired++;
                 if (ttl < 0) ttl = 0;
                 // 累积键的 TTL
                 ttl_sum += ttl;

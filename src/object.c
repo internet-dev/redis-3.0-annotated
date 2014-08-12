@@ -54,7 +54,7 @@ robj *createObject(int type, void *ptr) {
 // 创建一个 REDIS_ENCODING_RAW 编码的字符对象
 // 对象的指针指向一个 sds 结构
 robj *createRawStringObject(char *ptr, size_t len) {
-    return createObject(REDIS_STRING,sdsnewlen(ptr,len));
+    return createObject(REDIS_STRING, sdsnewlen(ptr, len));
 }
 
 /* Create a string object with encoding REDIS_ENCODING_EMBSTR, that is
@@ -76,10 +76,10 @@ robj *createEmbeddedStringObject(char *ptr, size_t len) {
     sh->len = len;
     sh->free = 0;
     if (ptr) {
-        memcpy(sh->buf,ptr,len);
+        memcpy(sh->buf, ptr, len);
         sh->buf[len] = '\0';
     } else {
-        memset(sh->buf,0,len+1);
+        memset(sh->buf, 0, len + 1);
     }
     return o;
 }
@@ -93,9 +93,9 @@ robj *createEmbeddedStringObject(char *ptr, size_t len) {
 #define REDIS_ENCODING_EMBSTR_SIZE_LIMIT 39
 robj *createStringObject(char *ptr, size_t len) {
     if (len <= REDIS_ENCODING_EMBSTR_SIZE_LIMIT)
-        return createEmbeddedStringObject(ptr,len);
+        return createEmbeddedStringObject(ptr, len);
     else
-        return createRawStringObject(ptr,len);
+        return createRawStringObject(ptr, len);
 }
 
 /*

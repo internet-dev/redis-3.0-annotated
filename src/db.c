@@ -1157,10 +1157,10 @@ void propagateExpire(redisDb *db, robj *key) {
 
     // 传播到 AOF 
     if (server.aof_state != REDIS_AOF_OFF)
-        feedAppendOnlyFile(server.delCommand,db->id,argv,2);
+        feedAppendOnlyFile(server.delCommand, db->id, argv, 2);
 
     // 传播到所有附属节点
-    replicationFeedSlaves(server.slaves,db->id,argv,2);
+    replicationFeedSlaves(server.slaves, db->id, argv, 2);
 
     decrRefCount(argv[0]);
     decrRefCount(argv[1]);
@@ -1322,19 +1322,19 @@ void expireGenericCommand(redisClient *c, long long basetime, int unit) {
 }
 
 void expireCommand(redisClient *c) {
-    expireGenericCommand(c,mstime(),UNIT_SECONDS);
+    expireGenericCommand(c, mstime(), UNIT_SECONDS);
 }
 
 void expireatCommand(redisClient *c) {
-    expireGenericCommand(c,0,UNIT_SECONDS);
+    expireGenericCommand(c, 0, UNIT_SECONDS);
 }
 
 void pexpireCommand(redisClient *c) {
-    expireGenericCommand(c,mstime(),UNIT_MILLISECONDS);
+    expireGenericCommand(c, mstime(), UNIT_MILLISECONDS);
 }
 
 void pexpireatCommand(redisClient *c) {
-    expireGenericCommand(c,0,UNIT_MILLISECONDS);
+    expireGenericCommand(c, 0, UNIT_MILLISECONDS);
 }
 
 /*

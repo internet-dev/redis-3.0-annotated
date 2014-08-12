@@ -166,11 +166,11 @@ void aofRewriteBufferAppend(unsigned char *s, unsigned long len) {
              * 每次创建 10 个缓存块就打印一个日志，用作标记或者提醒
              */
             numblocks = listLength(server.aof_rewrite_buf_blocks);
-            if (((numblocks+1) % 10) == 0) {
-                int level = ((numblocks+1) % 100) == 0 ? REDIS_WARNING :
+            if (((numblocks + 1) % 10) == 0) {
+                int level = ((numblocks + 1) % 100) == 0 ? REDIS_WARNING :
                                                          REDIS_NOTICE;
-                redisLog(level,"Background AOF buffer size: %lu MB",
-                    aofRewriteBufferSize()/(1024*1024));
+                redisLog(level, "Background AOF buffer size: %lu MB",
+                    aofRewriteBufferSize() / (1024 * 1024));
             }
         }
     }
@@ -636,7 +636,7 @@ sds catAppendOnlyExpireAtCommand(sds buf, struct redisCommand *cmd, robj *key, r
      * 取出过期值
      */
     seconds = getDecodedObject(seconds);
-    when = strtoll(seconds->ptr,NULL,10);
+    when = strtoll(seconds->ptr, NULL, 10);
 
     /* Convert argument into milliseconds for EXPIRE, SETEX, EXPIREAT 
      *
@@ -661,7 +661,7 @@ sds catAppendOnlyExpireAtCommand(sds buf, struct redisCommand *cmd, robj *key, r
     decrRefCount(seconds);
 
     // 构建 PEXPIREAT 命令
-    argv[0] = createStringObject("PEXPIREAT",9);
+    argv[0] = createStringObject("PEXPIREAT", 9);
     argv[1] = key;
     argv[2] = createStringObjectFromLongLong(when);
 
@@ -690,9 +690,9 @@ void feedAppendOnlyFile(struct redisCommand *cmd, int dictid, robj **argv, int a
     if (dictid != server.aof_selected_db) {
         char seldb[64];
 
-        snprintf(seldb,sizeof(seldb),"%d",dictid);
-        buf = sdscatprintf(buf,"*2\r\n$6\r\nSELECT\r\n$%lu\r\n%s\r\n",
-            (unsigned long)strlen(seldb),seldb);
+        snprintf(seldb, sizeof(seldb), "%d", dictid);
+        buf = sdscatprintf(buf, "*2\r\n$6\r\nSELECT\r\n$%lu\r\n%s\r\n",
+            (unsigned long)strlen(seldb), seldb);
 
         server.aof_selected_db = dictid;
     }
@@ -704,7 +704,7 @@ void feedAppendOnlyFile(struct redisCommand *cmd, int dictid, robj **argv, int a
          *
          * 将 EXPIRE 、 PEXPIRE 和 EXPIREAT 都翻译成 PEXPIREAT
          */
-        buf = catAppendOnlyExpireAtCommand(buf,cmd,argv[1],argv[2]);
+        buf = catAppendOnlyExpireAtCommand(buf, cmd, argv[1], argv[2]);
 
     // SETEX 和 PSETEX 命令
     } else if (cmd->proc == setexCommand || cmd->proc == psetexCommand) {
@@ -714,21 +714,21 @@ void feedAppendOnlyFile(struct redisCommand *cmd, int dictid, robj **argv, int a
          */
 
         // SET
-        tmpargv[0] = createStringObject("SET",3);
+        tmpargv[0] = createStringObject("SET", 3);
         tmpargv[1] = argv[1];
         tmpargv[2] = argv[3];
-        buf = catAppendOnlyGenericCommand(buf,3,tmpargv);
+        buf = catAppendOnlyGenericCommand(buf, 3, tmpargv);
 
         // PEXPIREAT
         decrRefCount(tmpargv[0]);
-        buf = catAppendOnlyExpireAtCommand(buf,cmd,argv[1],argv[2]);
+        buf = catAppendOnlyExpireAtCommand(buf, cmd, argv[1], argv[2]);
 
     // 其他命令
     } else {
         /* All the other commands don't need translation or need the
          * same translation already operated in the command vector
          * for the replication itself. */
-        buf = catAppendOnlyGenericCommand(buf,argc,argv);
+        buf = catAppendOnlyGenericCommand(buf, argc, argv);
     }
 
     /* Append to the AOF buffer. This will be flushed on disk just before
@@ -740,7 +740,7 @@ void feedAppendOnlyFile(struct redisCommand *cmd, int dictid, robj **argv, int a
      * 并向客户端返回一个回复。
      */
     if (server.aof_state == REDIS_AOF_ON)
-        server.aof_buf = sdscatlen(server.aof_buf,buf,sdslen(buf));
+        server.aof_buf = sdscatlen(server.aof_buf, buf, sdslen(buf));
 
     /* If a background append only file rewriting is in progress we want to
      * accumulate the differences between the child DB and the current one
@@ -752,7 +752,7 @@ void feedAppendOnlyFile(struct redisCommand *cmd, int dictid, robj **argv, int a
      * 从而记录当前正在重写的 AOF 文件和数据库当前状态的差异。
      */
     if (server.aof_child_pid != -1)
-        aofRewriteBufferAppend((unsigned char*)buf,sdslen(buf));
+        aofRewriteBufferAppend((unsigned char*)buf, sdslen(buf));
 
     // 释放
     sdsfree(buf);
