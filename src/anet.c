@@ -436,7 +436,7 @@ int anetWrite(int fd, char *buf, int count)
  * 绑定并创建监听套接字
  */
 static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len, int backlog) {
-    if (bind(s,sa,len) == -1) {
+    if (bind(s, sa, len) == -1) {
         anetSetError(err, "bind: %s", strerror(errno));
         close(s);
         return ANET_ERR;
@@ -480,9 +480,9 @@ static int _anetTcpServer(char *err, int port, char *bindaddr, int af, int backl
         if ((s = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
             continue;
 
-        if (af == AF_INET6 && anetV6Only(err,s) == ANET_ERR) goto error;
-        if (anetSetReuseAddr(err,s) == ANET_ERR) goto error;
-        if (anetListen(err,s,p->ai_addr,p->ai_addrlen,backlog) == ANET_ERR) goto error;
+        if (af == AF_INET6 && anetV6Only(err, s) == ANET_ERR) goto error;
+        if (anetSetReuseAddr(err, s) == ANET_ERR) goto error;
+        if (anetListen(err, s, p->ai_addr, p->ai_addrlen, backlog) == ANET_ERR) goto error;
         goto end;
     }
     if (p == NULL) {

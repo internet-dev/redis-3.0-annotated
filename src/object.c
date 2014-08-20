@@ -670,7 +670,7 @@ int compareStringObjectsWithFlags(robj *a, robj *b, int flags) {
         astr = a->ptr;
         alen = sdslen(astr);
     } else {
-        alen = ll2string(bufa,sizeof(bufa),(long) a->ptr);
+        alen = ll2string(bufa, sizeof(bufa), (long) a->ptr);
         astr = bufa;
     }
 
@@ -679,27 +679,27 @@ int compareStringObjectsWithFlags(robj *a, robj *b, int flags) {
         bstr = b->ptr;
         blen = sdslen(bstr);
     } else {
-        blen = ll2string(bufb,sizeof(bufb),(long) b->ptr);
+        blen = ll2string(bufb, sizeof(bufb), (long) b->ptr);
         bstr = bufb;
     }
 
 
 	// 对比
     if (flags & REDIS_COMPARE_COLL) {
-        return strcoll(astr,bstr);
+        return strcoll(astr, bstr);
     } else {
         int cmp;
 
         minlen = (alen < blen) ? alen : blen;
-        cmp = memcmp(astr,bstr,minlen);
-        if (cmp == 0) return alen-blen;
+        cmp = memcmp(astr, bstr, minlen);
+        if (cmp == 0) return alen - blen;
         return cmp;
     }
 }
 
 /* Wrapper for compareStringObjectsWithFlags() using binary comparison. */
 int compareStringObjects(robj *a, robj *b) {
-    return compareStringObjectsWithFlags(a,b,REDIS_COMPARE_BINARY);
+    return compareStringObjectsWithFlags(a, b, REDIS_COMPARE_BINARY);
 }
 
 /* Wrapper for compareStringObjectsWithFlags() using collation. */

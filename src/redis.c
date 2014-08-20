@@ -1988,29 +1988,29 @@ int listenToPort(int port, int *fds, int *count) {
         if (server.bindaddr[j] == NULL) {
             /* Bind * for both IPv6 and IPv4, we enter here only if
              * server.bindaddr_count == 0. */
-            fds[*count] = anetTcp6Server(server.neterr,port,NULL,
+            fds[*count] = anetTcp6Server(server.neterr, port, NULL,
                 server.tcp_backlog);
             if (fds[*count] != ANET_ERR) {
-                anetNonBlock(NULL,fds[*count]);
+                anetNonBlock(NULL, fds[*count]);
                 (*count)++;
             }
-            fds[*count] = anetTcpServer(server.neterr,port,NULL,
+            fds[*count] = anetTcpServer(server.neterr, port, NULL,
                 server.tcp_backlog);
             if (fds[*count] != ANET_ERR) {
-                anetNonBlock(NULL,fds[*count]);
+                anetNonBlock(NULL, fds[*count]);
                 (*count)++;
             }
             /* Exit the loop if we were able to bind * on IPv4 or IPv6,
              * otherwise fds[*count] will be ANET_ERR and we'll print an
              * error and return to the caller with an error. */
             if (*count) break;
-        } else if (strchr(server.bindaddr[j],':')) {
+        } else if (strchr(server.bindaddr[j], ':')) {
             /* Bind IPv6 address. */
-            fds[*count] = anetTcp6Server(server.neterr,port,server.bindaddr[j],
+            fds[*count] = anetTcp6Server(server.neterr, port, server.bindaddr[j],
                 server.tcp_backlog);
         } else {
             /* Bind IPv4 address. */
-            fds[*count] = anetTcpServer(server.neterr,port,server.bindaddr[j],
+            fds[*count] = anetTcpServer(server.neterr, port, server.bindaddr[j],
                 server.tcp_backlog);
         }
         if (fds[*count] == ANET_ERR) {
@@ -2020,9 +2020,10 @@ int listenToPort(int port, int *fds, int *count) {
                 port, server.neterr);
             return REDIS_ERR;
         }
-        anetNonBlock(NULL,fds[*count]);
+        anetNonBlock(NULL, fds[*count]);
         (*count)++;
     }
+
     return REDIS_OK;
 }
 
@@ -2084,20 +2085,20 @@ void initServer() {
     /* Open the TCP listening socket for the user commands. */
     // 打开 TCP 监听端口，用于等待客户端的命令请求
     if (server.port != 0 &&
-        listenToPort(server.port,server.ipfd,&server.ipfd_count) == REDIS_ERR)
+        listenToPort(server.port, server.ipfd, &server.ipfd_count) == REDIS_ERR)
         exit(1);
 
     /* Open the listening Unix domain socket. */
     // 打开 UNIX 本地端口
     if (server.unixsocket != NULL) {
         unlink(server.unixsocket); /* don't care if this fails */
-        server.sofd = anetUnixServer(server.neterr,server.unixsocket,
+        server.sofd = anetUnixServer(server.neterr, server.unixsocket,
             server.unixsocketperm, server.tcp_backlog);
         if (server.sofd == ANET_ERR) {
             redisLog(REDIS_WARNING, "Opening socket: %s", server.neterr);
             exit(1);
         }
-        anetNonBlock(NULL,server.sofd);
+        anetNonBlock(NULL, server.sofd);
     }
 
     /* Abort if there are no listening sockets at all. */
@@ -2120,10 +2121,10 @@ void initServer() {
     }
 
     // 创建 PUBSUB 相关结构
-    server.pubsub_channels = dictCreate(&keylistDictType,NULL);
+    server.pubsub_channels = dictCreate(&keylistDictType, NULL);
     server.pubsub_patterns = listCreate();
-    listSetFreeMethod(server.pubsub_patterns,freePubsubPattern);
-    listSetMatchMethod(server.pubsub_patterns,listMatchPubsubPattern);
+    listSetFreeMethod(server.pubsub_patterns, freePubsubPattern);
+    listSetMatchMethod(server.pubsub_patterns, listMatchPubsubPattern);
 
     server.cronloops = 0;
     server.rdb_child_pid = -1;
