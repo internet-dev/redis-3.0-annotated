@@ -2792,7 +2792,7 @@ void closeListeningSockets(int unlink_unix_socket) {
         for (j = 0; j < server.cfd_count; j++) close(server.cfd[j]);
 
     if (unlink_unix_socket && server.unixsocket) {
-        redisLog(REDIS_NOTICE,"Removing the unix socket file.");
+        redisLog(REDIS_NOTICE, "Removing the unix socket file.");
         unlink(server.unixsocket); /* don't care if this fails */
     }
 }
@@ -2801,15 +2801,15 @@ int prepareForShutdown(int flags) {
     int save = flags & REDIS_SHUTDOWN_SAVE;
     int nosave = flags & REDIS_SHUTDOWN_NOSAVE;
 
-    redisLog(REDIS_WARNING,"User requested shutdown...");
+    redisLog(REDIS_WARNING, "User requested shutdown...");
 
     /* Kill the saving child if there is a background saving in progress.
        We want to avoid race conditions, for instance our saving child may
        overwrite the synchronous saving did by SHUTDOWN. */
     // 如果有 BGSAVE 正在执行，那么杀死子进程，避免竞争条件
     if (server.rdb_child_pid != -1) {
-        redisLog(REDIS_WARNING,"There is a child saving an .rdb. Killing it!");
-        kill(server.rdb_child_pid,SIGUSR1);
+        redisLog(REDIS_WARNING, "There is a child saving an .rdb. Killing it!");
+        kill(server.rdb_child_pid, SIGUSR1);
         rdbRemoveTempFile(server.rdb_child_pid);
     }
 
@@ -2820,17 +2820,17 @@ int prepareForShutdown(int flags) {
         if (server.aof_child_pid != -1) {
             redisLog(REDIS_WARNING,
                 "There is a child rewriting the AOF. Killing it!");
-            kill(server.aof_child_pid,SIGUSR1);
+            kill(server.aof_child_pid, SIGUSR1);
         }
         /* Append only file: fsync() the AOF and exit */
-        redisLog(REDIS_NOTICE,"Calling fsync() on the AOF file.");
+        redisLog(REDIS_NOTICE, "Calling fsync() on the AOF file.");
         aof_fsync(server.aof_fd);
     }
 
     // 如果客户端执行的是 SHUTDOWN save ，或者 SAVE 功能被打开
     // 那么执行 SAVE 操作
     if ((server.saveparamslen > 0 && !nosave) || save) {
-        redisLog(REDIS_NOTICE,"Saving the final RDB snapshot before exiting.");
+        redisLog(REDIS_NOTICE, "Saving the final RDB snapshot before exiting.");
         /* Snapshotting. Perform a SYNC SAVE and exit */
         if (rdbSave(server.rdb_filename) != REDIS_OK) {
             /* Ooops.. error saving! The best we can do is to continue
@@ -2838,14 +2838,14 @@ int prepareForShutdown(int flags) {
              * in the next cron() Redis will be notified that the background
              * saving aborted, handling special stuff like slaves pending for
              * synchronization... */
-            redisLog(REDIS_WARNING,"Error trying to save the DB, can't exit.");
+            redisLog(REDIS_WARNING, "Error trying to save the DB, can't exit.");
             return REDIS_ERR;
         }
     }
 
     // 移除 pidfile 文件
     if (server.daemonize) {
-        redisLog(REDIS_NOTICE,"Removing the pid file.");
+        redisLog(REDIS_NOTICE, "Removing the pid file.");
         unlink(server.pidfile);
     }
 

@@ -46,7 +46,7 @@
  * 写入成功返回 len ，失败返回 -1 。
  */
 static int rdbWriteRaw(rio *rdb, void *p, size_t len) {
-    if (rdb && rioWrite(rdb,p,len) == 0)
+    if (rdb && rioWrite(rdb, p, len) == 0)
         return -1;
     return len;
 }
@@ -55,7 +55,7 @@ static int rdbWriteRaw(rio *rdb, void *p, size_t len) {
  * 将长度为 1 字节的字符 type 写入到 rdb 文件中。
  */
 int rdbSaveType(rio *rdb, unsigned char type) {
-    return rdbWriteRaw(rdb,&type,1);
+    return rdbWriteRaw(rdb, &type, 1);
 }
 
 /* Load a "type" in RDB format, that is a one byte unsigned integer.
@@ -90,7 +90,7 @@ time_t rdbLoadTime(rio *rdb) {
  */
 int rdbSaveMillisecondTime(rio *rdb, long long t) {
     int64_t t64 = (int64_t) t;
-    return rdbWriteRaw(rdb,&t64,8);
+    return rdbWriteRaw(rdb, &t64, 8);
 }
 
 /*
@@ -114,26 +114,26 @@ int rdbSaveLen(rio *rdb, uint32_t len) {
     unsigned char buf[2];
     size_t nwritten;
 
-    if (len < (1<<6)) {
+    if (len < (1 << 6)) {
         /* Save a 6 bit len */
-        buf[0] = (len&0xFF)|(REDIS_RDB_6BITLEN<<6);
-        if (rdbWriteRaw(rdb,buf,1) == -1) return -1;
+        buf[0] = (len & 0xFF) | (REDIS_RDB_6BITLEN << 6);
+        if (rdbWriteRaw(rdb, buf, 1) == -1) return -1;
         nwritten = 1;
 
-    } else if (len < (1<<14)) {
+    } else if (len < (1 << 14)) {
         /* Save a 14 bit len */
-        buf[0] = ((len>>8)&0xFF)|(REDIS_RDB_14BITLEN<<6);
-        buf[1] = len&0xFF;
-        if (rdbWriteRaw(rdb,buf,2) == -1) return -1;
+        buf[0] = ((len >> 8) & 0xFF) | (REDIS_RDB_14BITLEN << 6);
+        buf[1] = len & 0xFF;
+        if (rdbWriteRaw(rdb, buf, 2) == -1) return -1;
         nwritten = 2;
 
     } else {
         /* Save a 32 bit len */
-        buf[0] = (REDIS_RDB_32BITLEN<<6);
-        if (rdbWriteRaw(rdb,buf,1) == -1) return -1;
+        buf[0] = (REDIS_RDB_32BITLEN << 6);
+        if (rdbWriteRaw(rdb, buf, 1) == -1) return -1;
         len = htonl(len);
-        if (rdbWriteRaw(rdb,&len,4) == -1) return -1;
-        nwritten = 1+4;
+        if (rdbWriteRaw(rdb, &len, 4) == -1) return -1;
+        nwritten = 1 + 4;
     }
 
     return nwritten;
@@ -661,37 +661,37 @@ int rdbSaveObjectType(rio *rdb, robj *o) {
     switch (o->type) {
 
     case REDIS_STRING:
-        return rdbSaveType(rdb,REDIS_RDB_TYPE_STRING);
+        return rdbSaveType(rdb, REDIS_RDB_TYPE_STRING);
 
     case REDIS_LIST:
         if (o->encoding == REDIS_ENCODING_ZIPLIST)
-            return rdbSaveType(rdb,REDIS_RDB_TYPE_LIST_ZIPLIST);
+            return rdbSaveType(rdb, REDIS_RDB_TYPE_LIST_ZIPLIST);
         else if (o->encoding == REDIS_ENCODING_LINKEDLIST)
-            return rdbSaveType(rdb,REDIS_RDB_TYPE_LIST);
+            return rdbSaveType(rdb, REDIS_RDB_TYPE_LIST);
         else
             redisPanic("Unknown list encoding");
 
     case REDIS_SET:
         if (o->encoding == REDIS_ENCODING_INTSET)
-            return rdbSaveType(rdb,REDIS_RDB_TYPE_SET_INTSET);
+            return rdbSaveType(rdb, REDIS_RDB_TYPE_SET_INTSET);
         else if (o->encoding == REDIS_ENCODING_HT)
-            return rdbSaveType(rdb,REDIS_RDB_TYPE_SET);
+            return rdbSaveType(rdb, REDIS_RDB_TYPE_SET);
         else
             redisPanic("Unknown set encoding");
 
     case REDIS_ZSET:
         if (o->encoding == REDIS_ENCODING_ZIPLIST)
-            return rdbSaveType(rdb,REDIS_RDB_TYPE_ZSET_ZIPLIST);
+            return rdbSaveType(rdb, REDIS_RDB_TYPE_ZSET_ZIPLIST);
         else if (o->encoding == REDIS_ENCODING_SKIPLIST)
-            return rdbSaveType(rdb,REDIS_RDB_TYPE_ZSET);
+            return rdbSaveType(rdb, REDIS_RDB_TYPE_ZSET);
         else
             redisPanic("Unknown sorted set encoding");
 
     case REDIS_HASH:
         if (o->encoding == REDIS_ENCODING_ZIPLIST)
-            return rdbSaveType(rdb,REDIS_RDB_TYPE_HASH_ZIPLIST);
+            return rdbSaveType(rdb, REDIS_RDB_TYPE_HASH_ZIPLIST);
         else if (o->encoding == REDIS_ENCODING_HT)
-            return rdbSaveType(rdb,REDIS_RDB_TYPE_HASH);
+            return rdbSaveType(rdb, REDIS_RDB_TYPE_HASH);
         else
             redisPanic("Unknown hash encoding");
 
@@ -902,17 +902,17 @@ int rdbSaveKeyValuePair(rio *rdb, robj *key, robj *val,
          */
         if (expiretime < now) return 0;
 
-        if (rdbSaveType(rdb,REDIS_RDB_OPCODE_EXPIRETIME_MS) == -1) return -1;
-        if (rdbSaveMillisecondTime(rdb,expiretime) == -1) return -1;
+        if (rdbSaveType(rdb, REDIS_RDB_OPCODE_EXPIRETIME_MS) == -1) return -1;
+        if (rdbSaveMillisecondTime(rdb, expiretime) == -1) return -1;
     }
 
     /* Save type, key, value 
      *
      * 保存类型，键，值
      */
-    if (rdbSaveObjectType(rdb,val) == -1) return -1;
-    if (rdbSaveStringObject(rdb,key) == -1) return -1;
-    if (rdbSaveObject(rdb,val) == -1) return -1;
+    if (rdbSaveObjectType(rdb, val) == -1) return -1;
+    if (rdbSaveStringObject(rdb, key) == -1) return -1;
+    if (rdbSaveObject(rdb, val) == -1) return -1;
 
     return 1;
 }
@@ -935,8 +935,8 @@ int rdbSave(char *filename) {
     uint64_t cksum;
 
     // 创建临时文件
-    snprintf(tmpfile,256,"temp-%d.rdb", (int) getpid());
-    fp = fopen(tmpfile,"w");
+    snprintf(tmpfile, 256, "temp-%d.rdb", (int) getpid());
+    fp = fopen(tmpfile, "w");
     if (!fp) {
         redisLog(REDIS_WARNING, "Failed opening .rdb for saving: %s",
             strerror(errno));
@@ -944,21 +944,21 @@ int rdbSave(char *filename) {
     }
 
     // 初始化 I/O
-    rioInitWithFile(&rdb,fp);
+    rioInitWithFile(&rdb, fp);
 
     // 设置校验和函数
     if (server.rdb_checksum)
         rdb.update_cksum = rioGenericUpdateChecksum;
 
     // 写入 RDB 版本号
-    snprintf(magic,sizeof(magic),"REDIS%04d",REDIS_RDB_VERSION);
-    if (rdbWriteRaw(&rdb,magic,9) == -1) goto werr;
+    snprintf(magic, sizeof(magic), "REDIS%04d", REDIS_RDB_VERSION);
+    if (rdbWriteRaw(&rdb, magic, 9) == -1) goto werr;
 
     // 遍历所有数据库
     for (j = 0; j < server.dbnum; j++) {
 
         // 指向数据库
-        redisDb *db = server.db+j;
+        redisDb *db = server.db + j;
 
         // 指向数据库键空间
         dict *d = db->dict;
@@ -977,26 +977,26 @@ int rdbSave(char *filename) {
          *
          * 写入 DB 选择器
          */
-        if (rdbSaveType(&rdb,REDIS_RDB_OPCODE_SELECTDB) == -1) goto werr;
+        if (rdbSaveType(&rdb, REDIS_RDB_OPCODE_SELECTDB) == -1) goto werr;
         if (rdbSaveLen(&rdb,j) == -1) goto werr;
 
         /* Iterate this DB writing every entry 
          *
          * 遍历数据库，并写入每个键值对的数据
          */
-        while((de = dictNext(di)) != NULL) {
+        while ((de = dictNext(di)) != NULL) {
             sds keystr = dictGetKey(de);
             robj key, *o = dictGetVal(de);
             long long expire;
             
             // 根据 keystr ，在栈中创建一个 key 对象
-            initStaticStringObject(key,keystr);
+            initStaticStringObject(key, keystr);
 
             // 获取键的过期时间
-            expire = getExpire(db,&key);
+            expire = getExpire(db, &key);
 
             // 保存键值对数据
-            if (rdbSaveKeyValuePair(&rdb,&key,o,expire,now) == -1) goto werr;
+            if (rdbSaveKeyValuePair(&rdb, &key, o, expire, now) == -1) goto werr;
         }
         dictReleaseIterator(di);
     }
@@ -1006,7 +1006,7 @@ int rdbSave(char *filename) {
      *
      * 写入 EOF 代码
      */
-    if (rdbSaveType(&rdb,REDIS_RDB_OPCODE_EOF) == -1) goto werr;
+    if (rdbSaveType(&rdb, REDIS_RDB_OPCODE_EOF) == -1) goto werr;
 
     /* CRC64 checksum. It will be zero if checksum computation is disabled, the
      * loading code skips the check in this case. 
@@ -1018,7 +1018,7 @@ int rdbSave(char *filename) {
      */
     cksum = rdb.cksum;
     memrev64ifbe(&cksum);
-    rioWrite(&rdb,&cksum,8);
+    rioWrite(&rdb, &cksum, 8);
 
     /* Make sure data will not remain on the OS's output buffers */
     // 冲洗缓存，确保数据已写入磁盘
@@ -1031,14 +1031,14 @@ int rdbSave(char *filename) {
      *
      * 使用 RENAME ，原子性地对临时文件进行改名，覆盖原来的 RDB 文件。
      */
-    if (rename(tmpfile,filename) == -1) {
-        redisLog(REDIS_WARNING,"Error moving temp DB file on the final destination: %s", strerror(errno));
+    if (rename(tmpfile, filename) == -1) {
+        redisLog(REDIS_WARNING, "Error moving temp DB file on the final destination: %s", strerror(errno));
         unlink(tmpfile);
         return REDIS_ERR;
     }
 
     // 写入完成，打印日志
-    redisLog(REDIS_NOTICE,"DB saved on disk");
+    redisLog(REDIS_NOTICE, "DB saved on disk");
 
     // 清零数据库脏状态
     server.dirty = 0;
@@ -1057,7 +1057,7 @@ werr:
     // 删除文件
     unlink(tmpfile);
 
-    redisLog(REDIS_WARNING,"Write error saving DB on disk: %s", strerror(errno));
+    redisLog(REDIS_WARNING, "Write error saving DB on disk: %s", strerror(errno));
 
     if (di) dictReleaseIterator(di);
 
