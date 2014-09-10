@@ -2122,9 +2122,9 @@ void waitCommand(redisClient *c) {
  * waiting for replica acks. Never call it directly, call unblockClient()
  * instead. */
 void unblockClientWaitingReplicas(redisClient *c) {
-    listNode *ln = listSearchKey(server.clients_waiting_acks,c);
+    listNode *ln = listSearchKey(server.clients_waiting_acks, c);
     redisAssert(ln != NULL);
-    listDelNode(server.clients_waiting_acks,ln);
+    listDelNode(server.clients_waiting_acks, ln);
 }
 
 /* Check if there are clients blocked in WAIT that can be unblocked since

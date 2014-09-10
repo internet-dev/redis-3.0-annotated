@@ -145,7 +145,7 @@ void unblockClient(redisClient *c) {
     c->flags |= REDIS_UNBLOCKED;
     c->btype = REDIS_BLOCKED_NONE;
     server.bpop_blocked_clients--;
-    listAddNodeTail(server.unblocked_clients,c);
+    listAddNodeTail(server.unblocked_clients, c);
 }
 
 /* This function gets called when a blocked client timed out in order to

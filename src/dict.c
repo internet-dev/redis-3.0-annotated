@@ -677,7 +677,7 @@ static int dictGenericDelete(dict *d, const void *key, int nofree)
         prevHe = NULL;
         // 遍历链表上的所有节点
         // T = O(1)
-        while(he) {
+        while (he) {
         
             if (dictCompareKeys(d, key, he->key)) {
                 // 超找目标节点
@@ -764,7 +764,7 @@ int _dictClear(dict *d, dictht *ht, void(callback)(void *)) {
 
         // 遍历整个链表
         // T = O(1)
-        while(he) {
+        while (he) {
             nextHe = he->next;
             // 删除键
             dictFreeKey(d, he);
@@ -1506,8 +1506,8 @@ void dictEmpty(dict *d, void(callback)(void*)) {
 
     // 删除两个哈希表上的所有节点
     // T = O(N)
-    _dictClear(d,&d->ht[0],callback);
-    _dictClear(d,&d->ht[1],callback);
+    _dictClear(d, &d->ht[0], callback);
+    _dictClear(d, &d->ht[1], callback);
     // 重置属性 
     d->rehashidx = -1;
     d->iterators = 0;

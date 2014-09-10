@@ -1205,18 +1205,18 @@ void unblockClientWaitingData(redisClient *c) {
         redisAssertWithInfo(c,key,l != NULL);
 
         // 将指定客户端从链表中删除
-        listDelNode(l,listSearchKey(l,c));
+        listDelNode(l, listSearchKey(l, c));
 
         /* If the list is empty we need to remove it to avoid wasting memory */
         // 如果已经没有其他客户端阻塞在这个 key 上，那么删除这个链表
         if (listLength(l) == 0)
-            dictDelete(c->db->blocking_keys,key);
+            dictDelete(c->db->blocking_keys, key);
     }
     dictReleaseIterator(di);
 
     /* Cleanup the client structure */
     // 清空 bpop.keys 集合（字典）
-    dictEmpty(c->bpop.keys,NULL);
+    dictEmpty(c->bpop.keys, NULL);
     if (c->bpop.target) {
         decrRefCount(c->bpop.target);
         c->bpop.target = NULL;
