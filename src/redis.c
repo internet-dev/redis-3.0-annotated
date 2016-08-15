@@ -2823,7 +2823,8 @@ int prepareForShutdown(int flags) {
             kill(server.aof_child_pid, SIGUSR1);
         }
         /* Append only file: fsync() the AOF and exit */
-        redisLog(REDIS_NOTICE, "Calling fsync() on the AOF file.");
+        redisLog(REDIS_NOTICE,"Calling fsync() on the AOF file.");
+        // 将缓冲区的内容写入到硬盘里面
         aof_fsync(server.aof_fd);
     }
 

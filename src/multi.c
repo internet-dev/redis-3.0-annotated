@@ -410,7 +410,7 @@ void unwatchAllKeys(redisClient *c) {
     if (listLength(c->watched_keys) == 0) return;
 
     // 遍历链表中所有被客户端监视的键
-    listRewind(c->watched_keys,&li);
+    listRewind(c->watched_keys, &li);
     while((ln = listNext(&li))) {
         list *clients;
         watchedKey *wk;
